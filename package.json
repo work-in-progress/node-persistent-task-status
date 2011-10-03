@@ -1,0 +1,45 @@
+{
+  "author": "Martin Wawrusch <martin@wawrusch.com> (http://martinatsunset.com)",
+  "name": "persistent-task-status",
+  "description": "A node.js module, utilizing mongoose, that allows you to persist hierarchical task information for potentially long running, faulty tasks.",
+  "version": "0.0.1",
+  "main" : "lib/index.js",
+  "repository": {
+    "type": "git",
+    "url": "git://github.com/freshfugu/persistent-task-status.git"
+  },
+  "bin" : {
+  }, 
+  "directories" : {
+    "lib" : "./lib",
+    "test" : "./spec"
+  },
+  "keywords" : [
+    "mongoose","mongodb","task","persistent","workflow"
+  ],
+  "scripts": {
+    "test": "vows --spec spec/*-spec.coffee",
+    "watch" : "coffee -c -w  -o lib src"
+  },
+  "engines": {
+    "node": ">=0.4.8"
+  },
+  "dependencies": {
+    "mongoose" : ">= 2.2.3",
+    "optimist" : "*",
+    "underscore" : "*",
+    "async" : "*"
+  },
+  "devDependencies": {
+    "colors" : ">= 0.5.0",
+    "should" : ">=0.2.1",    
+    "vows" : ">= 0.5.9"
+  },
+  "bugs": { "url": "http://github.com/freshfugu/persistent-task-status/issues" },
+    "licenses": [
+      { "type": "MIT",
+        "url": "http://github.com/freshfugu/zombie/raw/persistent-task-status/LICENSE"
+      }
+    ]
+    
+}
