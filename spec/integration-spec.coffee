@@ -8,8 +8,8 @@ main = require '../lib/index'
 
 vows.describe("the main workflow").addBatch( 
   "creating a task scope": 
-    topic:  () -> main.getOrCreateTaskContainer("freshfugu:epf:20110930",@callback) 
+    topic:  () -> main.client.getOrCreateTaskContainer("freshfugu:epf:20110930",@callback) 
     "must exist": (err,taskContainer) ->
       assert.isNull err
-      assert.isNoNull taskContainer
+      assert.isNotNull taskContainer
 ).export module
