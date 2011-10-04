@@ -5,10 +5,10 @@ dbUrl = 'mongodb://localhost/pts_test'
 
 module.exports = 
   database : dbUrl
-
-  connectDatabase: (cb) ->
+  
+  # Connect to the test database.
+  connectDatabase: () ->
     mongoose.connect dbUrl
-    cb null
     
   cleanDatabase : (cb) ->
     databaseCleaner = new DatabaseCleaner('mongodb')

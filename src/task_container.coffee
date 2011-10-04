@@ -33,7 +33,7 @@ module.exports = class TaskContainer
   updateTask: (task,values,cb) ->  
     cb null
 
-  _create: (connection,cb) ->
+  _create: (cb) ->
     instance = new schema.TaskContainerModel()
     instance.name = @name
     

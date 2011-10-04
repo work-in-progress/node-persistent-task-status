@@ -19,5 +19,5 @@ module.exports =
   TaskSchema : taskSchema
   TaskContainerSchema : taskContainerSchema
   TaskModel : mongoose.model "Task",taskSchema
-  TaskContainerModel : mongoose.model "TaskContainer",taskSchema
+  TaskContainerModel : mongoose.model "TaskContainer",taskContainerSchema
   

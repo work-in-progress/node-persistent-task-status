@@ -33,10 +33,22 @@ module.exports = class Client
   # err: Set to an Error object in case of error.
   # tc: The TaskContainer object, or null if it does not exists 
   getTaskContainer : (name,cb) ->   
+    console.log "getTaskContainer Searching for #{name}"
     
-    
-      tc = null
+    schema.TaskContainerModel.findOne name : name,(e,doc) ->
+      console.log 'HERE'
+      console.log "Finding one: #{e} DOC #{doc}"
+      return cb(e) if e? 
+      console.log 'HERE 1'
+      return cb(null,null) if doc?
+      console.log 'HERE 2'
+      
+      tc = new TaskContainer(doc.name)
+      console.log 'HERE 3'
+      
       cb null,tc
+      console.log 'HERE 4'
+      
     
   # Gets or creates a task container.
   # Callback parameters
@@ -44,13 +56,16 @@ module.exports = class Client
   # tc: TaskContainer object
   # isNew : true if this task container has been newly created, otherwise false
   getOrCreateTaskContainer : (name,cb) ->  
+    console.log "getOrCreateTaskContainer Searching for #{name}"
+
     @getTaskContainer name, (e,tc) ->
-      return cb e if e?
-      cb null,tc,false if tc
+      console.log "I AM HERE: #{e} || #{tc}"
+      return cb(e) if e?
+      return cb(null,tc,false) if tc?
       
       tc = new TaskContainer(name)
       
-      tc._create mongoose.connection, (e) ->
+      tc._create  (e) ->
         return cb e if e?
         cb null,tc,true
     
@@ -61,3 +76,4 @@ module.exports = class Client
   # name: Set to the name of the task container that has been deleted.
   deleteTaskContainer : (name,cb) ->
     cb null, name
+    null 
