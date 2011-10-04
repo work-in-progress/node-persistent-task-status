@@ -62,6 +62,6 @@ module.exports = class Client
   # err: Set to an Error object in case of error.
   # name: Set to the name of the task container that has been deleted.
   deleteTaskContainer : (name,cb) ->
-    cb null, name
-
-    
+    schema.TaskContainerModel.remove name : name, (e) ->
+      return cb(e) if e?
+      cb null, name

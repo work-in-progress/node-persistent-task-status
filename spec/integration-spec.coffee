@@ -24,8 +24,7 @@ vows.describe("integration")
   .addBatch 
     "WHEN I access a task container on an empty database": 
       topic:  () -> 
-        cb = @callback
-        main.client.getTaskContainer('freshfugu:epf:20110930',cb)
+        main.client.getTaskContainer('freshfugu:epf:20110930',@callback)
         return
       "THEN it must not exist": (err,taskContainer) ->
         assert.isNull err
@@ -33,20 +32,36 @@ vows.describe("integration")
   .addBatch 
     "WHEN creating a task container": 
       topic:  () ->
-        cb = @callback 
-        main.client.getOrCreateTaskContainer(defaultContainerName,cb)
+        main.client.getOrCreateTaskContainer(defaultContainerName,@callback)
         return
-      "must exist": (err,taskContainer) ->
+      "THEN it must exist": (err,taskContainer) ->
         assert.isNull err
         assert.isNotNull taskContainer      
   .addBatch 
     "WHEN accessing a task container after get or create": 
       topic:  () -> 
-        cb = @callback
-        main.client.getTaskContainer(defaultContainerName,cb)
+        main.client.getTaskContainer(defaultContainerName,@callback)
         return
-      "must exist": (err,taskContainer) ->
+      "THEN it must exist": (err,taskContainer) ->
         assert.isNull err
         assert.isNotNull taskContainer
+  .addBatch 
+    "WHEN deleting a non existing task container": 
+      topic:  () ->
+        main.client.deleteTaskContainer "Dummy", (e,name) =>
+          main.client.getTaskContainer defaultContainerName,@callback
+        return
+      "THEN nothing should have happened": (err,taskContainer) ->
+        assert.isNull err
+        assert.isNotNull taskContainer
+  .addBatch 
+    "WHEN deleting a task container": 
+      topic:  () ->
+        main.client.deleteTaskContainer defaultContainerName, (e,name) =>
+          main.client.getTaskContainer defaultContainerName,@callback
+        return
+      "THEN it must be gone": (err,taskContainer) ->
+        assert.isNull err
+        assert.isNull taskContainer
   .export module
 
