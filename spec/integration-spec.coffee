@@ -16,24 +16,35 @@ specHelper.connectDatabase()
 vows.describe("integration")
   .addBatch
     "CLEANING DATABASE" :
-      topic: () -> specHelper.cleanDatabase( @callback); null
+      topic: () -> 
+        specHelper.cleanDatabase @callback
+        return
       "THEN IT SHOULD BE CLEAN :)": () ->
         assert.isTrue true
   .addBatch 
     "WHEN I access a task container on an empty database": 
-      topic:  () -> main.client.getTaskContainer('freshfugu:epf:20110930',@callback);null
+      topic:  () -> 
+        cb = @callback
+        main.client.getTaskContainer('freshfugu:epf:20110930',cb)
+        return
       "THEN it must not exist": (err,taskContainer) ->
         assert.isNull err
         assert.isNull taskContainer
   .addBatch 
     "WHEN creating a task container": 
-      topic:  () -> main.client.getOrCreateTaskContainer(defaultContainerName,@callback) ;null
+      topic:  () ->
+        cb = @callback 
+        main.client.getOrCreateTaskContainer(defaultContainerName,cb)
+        return
       "must exist": (err,taskContainer) ->
         assert.isNull err
         assert.isNotNull taskContainer      
   .addBatch 
     "WHEN accessing a task container after get or create": 
-      topic:  () -> main.client.getTaskContainer(defaultContainerName,@callback) ;null
+      topic:  () -> 
+        cb = @callback
+        main.client.getTaskContainer(defaultContainerName,cb)
+        return
       "must exist": (err,taskContainer) ->
         assert.isNull err
         assert.isNotNull taskContainer

@@ -1,0 +1,21 @@
+#!/usr/bin/env node
+
+var main = require('../lib/index');
+var mongoose = require('mongoose');
+
+mongoose.connect('mongodb://localhost/pts_test');
+
+main.client.getTaskContainer('freshfugu:epf:20110930',function(e,doc) {
+	console.log("result A")
+	console.log(doc);
+	
+	main.client.getOrCreateTaskContainer('freshfugu:epf:20110930',function(e,doc) {
+	console.log("result B")
+		console.log(doc);
+
+		main.client.getTaskContainer('freshfugu:epf:20110930',function(e,doc) {
+			console.log("result C")
+			console.log(doc);
+		});
+	});	
+});
