@@ -1,12 +1,13 @@
 #async = require 'async'
 constants = require './constants'
 
-TaskContainer = require './task_container'
-Client = require './Client'
 
 # The current version of this module.
 module.exports.version = constants.version
-module.exports.Client = Client
+Client = module.exports.Client = require './Client'
+module.exports.Task = require './task'
+module.exports.TaskContainer = require './task_container'
+
 # export config *see pow
 
 module.exports.client = new Client()

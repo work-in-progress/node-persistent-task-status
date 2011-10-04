@@ -1,6 +1,6 @@
 ## About persistent-task-status
 
-A node.js module, utilizing mongoose, that allows you to persist hierarchical task information for potentially long running, faulty tasks.
+A node.js module, utilizing mongoose, that allows you to persist sequential task information for potentially long running, faulty tasks.
 
 Ok, now that we have that one liner out of the way let me explain the ratio behind this: We have some background processes that must be run in certain intervals in a certain fashion. One of those processes checks the iTunes EPF server hourly to find out if new files have been posted. If so, it needs to perform a couple steps, some in sequential order, some in parallel. The tasks are very heavy, involving gigabytes of data being shuffled around, and there is always something failing. So for this to work we need some persistent store that lets us keep track of what is going on with the tasks, and also get an insight into the current state (percentage complete). This is somewhat different from your typical message queue, which is why I created this module.
 
