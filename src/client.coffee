@@ -37,7 +37,8 @@ module.exports = class Client
       return cb(e) if e? 
       return cb(null,null) unless doc?
       
-      tc = new TaskContainer(doc.name)      
+      tc = new TaskContainer(doc.name)  
+      tc._init(doc)    
       cb null,tc
     
   # Gets or creates a task container.

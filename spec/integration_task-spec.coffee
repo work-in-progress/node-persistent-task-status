@@ -8,6 +8,7 @@ specHelper = require './spec_helper'
 
 defaultContainerName = "freshfugu:epf:20110930"
 defaultTask1Name = "task1"
+defaultTask2Name = "task2"
 
 specHelper.connectDatabase()
 
@@ -23,17 +24,28 @@ vows.describe("integration_task")
       "THEN IT SHOULD BE CLEAN :)": () ->
         assert.isTrue true
   .addBatch 
+    "WHEN creating a task container without tasks and we call getTasks": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTasks  @callback
+        return
+      "THEN it must not fails": (err,tasks) ->
+        assert.isNull err
+      "THEN it must return an empty array": (err,tasks) ->
+        assert.equal tasks.length,0
+        
+  .addBatch 
     "WHEN creating a task container": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
-          taskContainer.addTask defaultTask1Name,null, @callback
+          taskContainer.addTask defaultTask2Name,null, @callback
         return
       "THEN it must not fail": (err,task) ->
         assert.isNull err
       "THEN it must exist": (err,task) ->
         assert.isNotNull task      
       "THEN it must have the correct name": (err,task) ->
-        assert.equal task.name, defaultTask1Name
+        assert.equal task.name, defaultTask2Name
 
   .export module
 

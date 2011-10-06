@@ -46,7 +46,7 @@ module.exports = class TaskContainer
 
   # Retrieves all tasks belonging to this task container
   getTasks: (cb) =>
-    tasks = ( new Task()._init(instance) for instance in _taskContainerInstance.tasks)
+    tasks = ( new Task()._init(instance) for instance in @_taskContainerInstance.tasks)
     cb null,tasks
     
     
@@ -56,6 +56,10 @@ module.exports = class TaskContainer
   updateTask: (taskNameOrTask,values,cb) ->  
     cb null
 
+  _init: (instance) ->
+    @_taskContainerInstance = instance
+    @name = instance.name
+    
   _create: (cb) ->
     instance = new schema.TaskContainerModel()
     instance.name = @name
