@@ -12,10 +12,17 @@ mongoose = require 'mongoose'
 schema = require './schema'
 
 module.exports = class Task
-
+  _taskInstance: null
+  
+  _init: (instance) -> 
+    @_taskInstance = instance
+    @name = instance.name
+    @
+    
+    
   # A task container has a unique name
   constructor: (@name) ->
-  
+    #@name = _taskInstance.name || ''
   
   isComplete: () ->
     false
@@ -40,5 +47,6 @@ module.exports = class Task
     
   delayBetweenRetriesInSeconds: () ->
     2
+    
     
     
