@@ -7,9 +7,9 @@ Task = require '../lib/task'
 # hence the namespacing with : and stuff.
 
 vows.describe("The task").addBatch( 
-  "creating a task scope": 
+  "WHEN creating a task": 
     topic: new(Task)
-    "must exist": (task) ->
+    "THEN it must exist": (task) ->
       assert.isNotNull task      
 ).export module
 

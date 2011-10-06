@@ -8,6 +8,8 @@
 _ = require 'underscore'
 constants = require './constants'
 util = require './util'
+mongoose = require 'mongoose'
+schema = require './schema'
 
 module.exports = class Task
 

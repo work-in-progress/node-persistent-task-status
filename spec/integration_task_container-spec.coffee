@@ -13,7 +13,7 @@ specHelper.connectDatabase()
 # Please note that the specs here are mimicing a real use case,
 # hence the namespacing with : and stuff.
 
-vows.describe("integration")
+vows.describe("integration_task_container")
   .addBatch
     "CLEANING DATABASE" :
       topic: () -> 
@@ -34,9 +34,12 @@ vows.describe("integration")
       topic:  () ->
         main.client.getOrCreateTaskContainer(defaultContainerName,@callback)
         return
-      "THEN it must exist": (err,taskContainer) ->
+      "THEN it must not fail": (err,taskContainer) ->
         assert.isNull err
+      "THEN it must exist": (err,taskContainer) ->
         assert.isNotNull taskContainer      
+      "THEN it must have it's  _instance assigned.": (err,taskContainer) ->
+        assert.isNotNull taskContainer._instance
   .addBatch 
     "WHEN accessing a task container after get or create": 
       topic:  () -> 

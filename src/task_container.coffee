@@ -19,13 +19,21 @@ schema = require './schema'
 
 module.exports = class TaskContainer
 
+  # The cached instance
+  _instance : null
+  
   # A task container has a unique name
   constructor: (@name) ->
   
   
   addTask: (name,opts,cb) ->
-    t = new Task()
-    cb null,t
+    instance =new schema.TaskModel()
+    instance.name = @name
+    @_instance.tasks.push instance
+    @_instance.save (err) =>
+      return cb(err) if err?
+      t = new Task(name)
+      cb null,t
     
   deleteTask: (task,cb) ->
     cb null
@@ -37,6 +45,7 @@ module.exports = class TaskContainer
     instance = new schema.TaskContainerModel()
     instance.name = @name
     
-    instance.save (e) ->
+    instance.save (e) =>
+      @_instance = instance
       return cb(e) if e?
       cb null
