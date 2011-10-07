@@ -31,6 +31,8 @@ vows.describe("integration_task")
         return
       "THEN it must not fails": (err,tasks) ->
         assert.isNull err
+      "THEN it must be an array": (err,tasks) ->
+        assert.isArray tasks
       "THEN it must return an empty array": (err,tasks) ->
         assert.equal tasks.length,0
         
@@ -58,6 +60,9 @@ vows.describe("integration_task")
         assert.isNotNull task      
       "THEN it must have the correct name": (err,task) ->
         assert.equal task.name, defaultTask2Name
+      "THEN it must have it's instance assigned": (err,task) ->
+        assert.isNotNull task._taskInstance
+        
   .addBatch 
     "WHEN retrieving a non existant task": 
       topic:  () ->
@@ -68,6 +73,61 @@ vows.describe("integration_task")
         assert.isNull err
       "THEN it must not exist": (err,task) ->
         assert.isNull task      
+  .addBatch 
+    "WHEN accessing a task container with 1 task and we call getTasks": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTasks  @callback
+        return
+      "THEN it must not fails": (err,tasks) ->
+        assert.isNull err
+      "THEN it must be an array": (err,tasks) ->
+        assert.isArray tasks
+      "THEN it must return an array with 1 item": (err,tasks) ->
+        assert.equal tasks.length,1
+      "THEN the first task must have the right name": (err,tasks) ->
+        assert.equal tasks[0].name,defaultTask2Name
+      "THEN the first task must have it's instance assigned": (err,tasks) ->
+        assert.isNotNull tasks[0]._taskInstance
+  .addBatch 
+    "WHEN deleting an existing task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.deleteTask defaultTask2Name, @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must return a task": (err,task) ->
+        assert.isNotNull task      
+      "THEN it must return a task with a _taskInstance set to null": (err,task) ->
+        assert.isNull task._taskInstance      
+      "THEN it must return a task whose properties are still accessible": (err,task) ->
+        assert.equal task.name,defaultTask2Name     
+      # TODO: We need to make sure that the task has been removed from the mongoose array too.
+  .addBatch 
+    "WHEN accessing a task container after we deleted the only task and we call getTasks": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTasks  @callback
+        return
+      "THEN it must not fails": (err,tasks) ->
+        assert.isNull err
+      "THEN it must be an array": (err,tasks) ->
+        assert.isArray tasks
+      "THEN it must return an array with 0 item": (err,tasks) ->
+        assert.equal tasks.length,0
+        
+  .addBatch 
+    "WHEN deleting a nonexisting task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.deleteTask "somename", @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must return null as task": (err,task) ->
+        assert.isNull task
+
 
   .export module
 

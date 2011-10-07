@@ -43,7 +43,7 @@ class exports.TaskContainer
   ###
   # Add a task to a container. The new task is immediately persisted.
   # @param {string} name The name of the task. Required and must be unique within a container.
-  # @param {?AddTaskOptions} opts Additional options. Can be null
+  # @param {?AddTaskOptions|null} opts Additional options. Can be null
   # @param {AddTaskCallback} cb Callback that is invoked on completion.
   addTask: (name,opts,cb) ->
     instance =new schema.TaskModel()
@@ -77,21 +77,44 @@ class exports.TaskContainer
   # @param {GetTaskCallback} cb Callback that is invoked on completion.
   getTask: (name,cb) =>
     found = _.select(@_taskContainerInstance.tasks, (t) -> t.name == name)
-    return cb(null,_.first(found)) if found? && found.length > 0  
+    return cb(null,new Task()._init(_.first(found))) if found? && found.length > 0  
     cb null,null
 
+  # Callback that is invoked when calling @see getTasks.
+  # @typeDoc {function} GetTasksCallback
+  # @param {?Error} err The error, if any.
+  # @param {Array.<Task>} tasks An array of @see Task objects. Never null, but the array can be empty.
+  ###
+  ###
   # Retrieves all tasks belonging to this task container
+  # @param {GetTasksCallback} cb Callback that is invoked on completion.
   getTasks: (cb) =>
     tasks = ( new Task()._init(instance) for instance in @_taskContainerInstance.tasks)
     cb null,tasks
     
     
-  deleteTask: (taskNameOrTask,cb) ->
-    cb null
+  # Callback that is invoked when calling @see deleteTask.
+  # @typeDoc {function} DeleteTaskCallback
+  # @param {?Error} err The error, if any.
+  # @param {Task} task The task that has been deleted, for reference only. Do not invoke any methods on it, only access properties. Set to null if the task did not exist.
+  ###
+  ###
+  # Deletes a task.
+  # @param {DeleteTaskCallback} cb Callback that is invoked on completion.
+  deleteTask: (name,cb) =>
+    @getTask name, (err,t) =>
+      return cb(err) if err?
+      return cb(null,null) unless t
+      
+      t._taskInstance.remove()
+      @_taskContainerInstance.save (e) =>
+        t._taskInstance = null
+        cb null,t
   
   updateTask: (taskNameOrTask,values,cb) ->  
     cb null
 
+  
   _init: (instance) ->
     @_taskContainerInstance = instance
     @name = instance.name
