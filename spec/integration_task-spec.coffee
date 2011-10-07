@@ -89,11 +89,37 @@ vows.describe("integration_task")
         assert.equal tasks[0].name,defaultTask2Name
       "THEN the first task must have it's instance assigned": (err,tasks) ->
         assert.isNotNull tasks[0]._taskInstance
+
   .addBatch 
-    "WHEN deleting an existing task": 
+    "WHEN changing the name of a nonexisting task": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
-          taskContainer.deleteTask defaultTask2Name, @callback
+          taskContainer.updateTask "blah", name : defaultTask1Name , @callback
+        return
+      "THEN it must fail": (err,task) ->
+        assert.isNotNull err
+  
+  .addBatch 
+    "WHEN changing the name of an existing task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.updateTask defaultTask2Name, name : defaultTask1Name , @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must return a task": (err,task) ->
+        assert.isNotNull task      
+      "THEN it must return a task with a valid _taskInstance": (err,task) ->
+        assert.isNotNull task._taskInstance      
+      "THEN it must return a task whose name has been changed": (err,task) ->
+        assert.equal task.name,defaultTask1Name     
+      # TODO: We need to make sure that the task has been removed from the mongoose array too.
+
+  .addBatch 
+    "WHEN deleting an existing task (we changed the name previously)": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.deleteTask defaultTask1Name, @callback
         return
       "THEN it must not fail": (err,task) ->
         assert.isNull err
@@ -102,7 +128,7 @@ vows.describe("integration_task")
       "THEN it must return a task with a _taskInstance set to null": (err,task) ->
         assert.isNull task._taskInstance      
       "THEN it must return a task whose properties are still accessible": (err,task) ->
-        assert.equal task.name,defaultTask2Name     
+        assert.equal task.name,defaultTask1Name     
       # TODO: We need to make sure that the task has been removed from the mongoose array too.
   .addBatch 
     "WHEN accessing a task container after we deleted the only task and we call getTasks": 

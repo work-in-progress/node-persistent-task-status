@@ -36,7 +36,7 @@ class exports.TaskContainer
   # @param {?Task} task The task that has been created. 
   ###
   ### 
-  # Optional parameters for the addTask method.
+  # Optional parameters for the @see addTask method.
   # @typeDoc {object} AddTaskOptions
   # No parameters as of now.
   ###
@@ -100,6 +100,7 @@ class exports.TaskContainer
   ###
   ###
   # Deletes a task.
+  # @param {string} name The name of the task. Required.
   # @param {DeleteTaskCallback} cb Callback that is invoked on completion.
   deleteTask: (name,cb) =>
     @getTask name, (err,t) =>
@@ -108,12 +109,40 @@ class exports.TaskContainer
       
       t._taskInstance.remove()
       @_taskContainerInstance.save (e) =>
+        cb(e) if e?
         t._taskInstance = null
         cb null,t
   
-  updateTask: (taskNameOrTask,values,cb) ->  
-    cb null
+  # Callback that is invoked when calling @see updateTask.
+  # @typeDoc {function} UpdateTaskCallback
+  # @param {?Error} err The error, if any. A non existing task is an error condition (unlike delete).
+  # @param {Task} task The task that has been updated
+  ###
+  ### 
+  # Parameters for the @see updateTask method.
+  # @typeDoc {object} UpdateTaskValues
+  # @param {?string} name The name of the task. Ignored if null or undefined
+  ###
+  ###
+  # Updates a task.
+  # @param {string} name The name of the task. Required and must exist.
+  # @param {UpdateTaskValues} values The values to be set
+  # @param {UpdateTaskCallback} cb Callback that is invoked on completion.
+  updateTask: (name,values,cb) ->  
+    @getTask name, (err,t) =>
+      return cb(err) if err?
+      return cb(new Error("Task '#{name}' not found")) unless t
 
+      # add the code here that extracts the properties and assigns them to
+      # _instanceTask
+      # TODO: Optimize this code through use of utility function, no need
+      # to explicitly define all this
+      t._taskInstance.name = values.name if values.name?
+
+      @_taskContainerInstance.save (e) =>
+        cb(e) if e?
+        t._init t._taskInstance # reload property values
+        cb(null,t)
   
   _init: (instance) ->
     @_taskContainerInstance = instance
