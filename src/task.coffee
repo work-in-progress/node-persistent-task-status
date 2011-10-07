@@ -11,7 +11,7 @@ util = require './util'
 mongoose = require 'mongoose'
 schema = require './schema'
 
-module.exports = class Task
+class exports.Task
   _taskInstance: null
   
   _init: (instance) -> 

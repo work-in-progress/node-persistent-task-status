@@ -12,10 +12,10 @@ _ = require 'underscore'
 constants = require './constants'
 mongoose = require 'mongoose'
 util = require './util'
-TaskContainer = require './task_container'
+TaskContainer = require('./task_container').TaskContainer
 schema = require './schema'
 
-module.exports = class Client
+class exports.Client
   caseSensitiveNames : false
   
   # Initializes a new client

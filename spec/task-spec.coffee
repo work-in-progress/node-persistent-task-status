@@ -1,7 +1,7 @@
 vows = require 'vows'
 assert = require 'assert'
 
-Task = require '../lib/task'
+Task = require('../lib/task').Task
 
 # Please note that the specs here are mimicing a real use case,
 # hence the namespacing with : and stuff.

@@ -12,20 +12,39 @@
 _ = require 'underscore'
 constants = require './constants'
 util = require './util'
-Task = require './task'
+Task = require('./task').Task
 mongoose = require 'mongoose'
 schema = require './schema'
 
-
-module.exports = class TaskContainer
+# A task container that groups individual tasks together.
+class exports.TaskContainer
 
   # The cached instance
+  # @type {TaskContainerSchema}
+  # @private
   _taskContainerInstance : null
   
-  # A task container has a unique name
+  # Initializes as new task container
+  # @constructor
+  # @param {?string} name The unique name of this task container
   constructor: (@name) ->
   
   
+  ###
+  # Callback that is invoked when adding a task.
+  # @typeDoc {function} AddTaskCallback
+  # @param {?Error} err The error, if any.
+  # @param {?Task} task The task that has been created. 
+  ###
+  ### 
+  # Optional parameters for the addTask method.
+  # @typeDoc {object} AddTaskOptions
+  # No parameters as of now.
+  ###
+  # Add a task to a container. The new task is immediately persisted.
+  # @param {string} name The name of the task. Required and must be unique within a container.
+  # @param {?AddTaskOptions} opts Additional options. Can be null
+  # @param {AddTaskCallback} cb Callback that is invoked on completion.
   addTask: (name,opts,cb) ->
     instance =new schema.TaskModel()
     instance.name = name
@@ -34,8 +53,16 @@ module.exports = class TaskContainer
       return cb(err) if err?
       t = new Task()._init(instance)
       cb null,t
-      
-  # Looks for the next task that has not been completed
+    
+  ###
+  # Callback that is invoked when getting the next task to process.
+  # @typeDoc {function} GetNextTaskCallback
+  # @param {?Error} err The error, if any.
+  # @param {?Task} task The next task that can be processed. Can be null if no more tasks are available.
+  ###
+  # Gets the next task that has not been completed.
+  # @param {string} name The name of the task. Required and must exist.
+  # @param {GetTaskCallback} cb Callback that is invoked on completion.
   getNextTask: (name,cb) =>
     cb null
 
