@@ -15,9 +15,12 @@ taskContainerSchema = new Schema
   name : String
   tasks : [taskSchema]
 
-module.exports =
+class SchemaAndModels
   TaskSchema : taskSchema
   TaskContainerSchema : taskContainerSchema
   TaskModel : mongoose.model "Task",taskSchema
   TaskContainerModel : mongoose.model "TaskContainer",taskContainerSchema
+  
+
+module.exports = new SchemaAndModels
   
