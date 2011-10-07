@@ -30,8 +30,7 @@ class exports.TaskContainer
   constructor: (@name) ->
   
   
-  ###
-  # Callback that is invoked when adding a task.
+  # Callback that is invoked when calling @see addTask.
   # @typeDoc {function} AddTaskCallback
   # @param {?Error} err The error, if any.
   # @param {?Task} task The task that has been created. 
@@ -40,6 +39,7 @@ class exports.TaskContainer
   # Optional parameters for the addTask method.
   # @typeDoc {object} AddTaskOptions
   # No parameters as of now.
+  ###
   ###
   # Add a task to a container. The new task is immediately persisted.
   # @param {string} name The name of the task. Required and must be unique within a container.
@@ -54,22 +54,31 @@ class exports.TaskContainer
       t = new Task()._init(instance)
       cb null,t
     
-  ###
-  # Callback that is invoked when getting the next task to process.
+  # Callback that is invoked when calling @getNextTask.
   # @typeDoc {function} GetNextTaskCallback
   # @param {?Error} err The error, if any.
   # @param {?Task} task The next task that can be processed. Can be null if no more tasks are available.
   ###
+  ###
   # Gets the next task that has not been completed.
   # @param {string} name The name of the task. Required and must exist.
-  # @param {GetTaskCallback} cb Callback that is invoked on completion.
+  # @param {GetNextTaskCallback} cb Callback that is invoked on completion.
   getNextTask: (name,cb) =>
     cb null
 
-  # Returns a task by name.
-  # 
+  # Callback that is invoked when calling @see getTask.
+  # @typeDoc {function} GetNextTaskCallback
+  # @param {?Error} err The error, if any.
+  # @param {?Task} task The task, Can be null if task is not found.
+  ###
+  ###
+  # Gets the next task that has not been completed.
+  # @param {string} name The name of the task. Required.
+  # @param {GetTaskCallback} cb Callback that is invoked on completion.
   getTask: (name,cb) =>
-    cb null
+    found = _.select(@_taskContainerInstance.tasks, (t) -> t.name == name)
+    return cb(null,_.first(found)) if found? && found.length > 0  
+    cb null,null
 
   # Retrieves all tasks belonging to this task container
   getTasks: (cb) =>

@@ -35,7 +35,7 @@ vows.describe("integration_task")
         assert.equal tasks.length,0
         
   .addBatch 
-    "WHEN creating a task container": 
+    "WHEN creating a task container and adding a task": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
           taskContainer.addTask defaultTask2Name,null, @callback
@@ -46,6 +46,28 @@ vows.describe("integration_task")
         assert.isNotNull task      
       "THEN it must have the correct name": (err,task) ->
         assert.equal task.name, defaultTask2Name
+  .addBatch 
+    "WHEN retrieving an existing task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTask defaultTask2Name, @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must exist": (err,task) ->
+        assert.isNotNull task      
+      "THEN it must have the correct name": (err,task) ->
+        assert.equal task.name, defaultTask2Name
+  .addBatch 
+    "WHEN retrieving a non existant task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTask "somenonexistantname", @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must not exist": (err,task) ->
+        assert.isNull task      
 
   .export module
 
