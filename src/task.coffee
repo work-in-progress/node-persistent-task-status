@@ -38,6 +38,7 @@ class exports.Task
   # Boolean indicating whether the task has been completed or not.
   # @return {bool} True if this task has been completed, otherwise false.
   isComplete: () ->
+    @_taskInstance.isComplete
     
   # The completion percentage of this task. This is to be treated as informative only.
   # @return {number} A number ranging from 0 to 100 

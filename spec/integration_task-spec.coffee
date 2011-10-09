@@ -7,7 +7,7 @@ mongoose = require 'mongoose'
 specHelper = require './spec_helper'
 
 defaultContainerName = "freshfugu:epf:20110930"
-defaultTask1Name = "task1"
+alternateTaskName = "task1"
 defaultTask2Name = "task2"
 
 specHelper.connectDatabase()
@@ -94,7 +94,7 @@ vows.describe("integration_task")
     "WHEN changing the name of a nonexisting task": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
-          taskContainer.updateTask "blah", name : defaultTask1Name , @callback
+          taskContainer.updateTask "blah", name : alternateTaskName , @callback
         return
       "THEN it must fail": (err,task) ->
         assert.isNotNull err
@@ -103,7 +103,7 @@ vows.describe("integration_task")
     "WHEN changing the name of an existing task": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
-          taskContainer.updateTask defaultTask2Name, name : defaultTask1Name , @callback
+          taskContainer.updateTask defaultTask2Name, name : alternateTaskName , @callback
         return
       "THEN it must not fail": (err,task) ->
         assert.isNull err
@@ -112,14 +112,119 @@ vows.describe("integration_task")
       "THEN it must return a task with a valid _taskInstance": (err,task) ->
         assert.isNotNull task._taskInstance      
       "THEN it must return a task whose name has been changed": (err,task) ->
-        assert.equal task.name,defaultTask1Name     
-      # TODO: We need to make sure that the task has been removed from the mongoose array too.
+        assert.equal task.name,alternateTaskName     
+  .addBatch 
+    "WHEN changing the name back and update the other props of an existing task": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.updateTask alternateTaskName, 
+              name : defaultTask2Name
+              isComplete : true
+              percentageComplete : 65
+              statusText: "Status TEXT"
+              taskData: 
+                foo: 'bar'
+              processingData:
+                hello: 'world'
+              invokeCount : 2
+              taskDurationInMilliseconds : 3291
+              maxRetries : 67
+              delayBetweenRetriesInSeconds : 19
+              hasFailed : true
+              lastInvokedAt :  Date(3001)
+              taskEndedAt : Date(4002)
+              leasedTill : Date(5003)
+            , @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must return a task": (err,task) ->
+        assert.isNotNull task      
+      "THEN it must return a task with a valid _taskInstance": (err,task) ->
+        assert.isNotNull task._taskInstance      
+      "THEN it must return a task whose name has been changed": (err,task) ->
+        assert.equal task.name,defaultTask2Name     
+      "THEN it must return a task whose isComplete property has changed": (err,task) ->
+        assert.isTrue task.isComplete()     
+      "THEN it must return a task whose hasFailed property has changed": (err,task) ->
+        assert.isTrue task.hasFailed()     
+      "THEN it must return a task whose percentageComplete has been changed": (err,task) ->
+        assert.equal task.percentageComplete(),65
+      "THEN it must return a task whose statusText has been changed": (err,task) ->
+        assert.equal task.statusText(),"Status TEXT"
+      "THEN it must return a task whose invokeCount has been changed": (err,task) ->
+        assert.equal task.invokeCount(),2
+      "THEN it must return a task whose taskDurationInMilliseconds has been changed": (err,task) ->
+        assert.equal task.taskDurationInMilliseconds(),3291
+      "THEN it must return a task whose maxRetries has been changed": (err,task) ->
+        assert.equal task.maxRetries(),67
+      "THEN it must return a task whose delayBetweenRetriesInSeconds has been changed": (err,task) ->
+        assert.equal task.delayBetweenRetriesInSeconds(),19
+      "THEN it must return a task whose taskData has been changed": (err,task) ->
+        assert.isNotNull task.taskData()
+      "THEN it must return a task whose taskData has been changed and contains a value": (err,task) ->
+        assert.equal task.taskData().foo, "bar"
+      "THEN it must return a task whose processingData has been changed": (err,task) ->
+        assert.isNotNull task.processingData()
+      "THEN it must return a task whose processingData has been changed and contains a value": (err,task) ->
+        assert.equal task.processingData().hello, "world"
+      "THEN it must return a task whose lastInvokedAt has been changed": (err,task) ->
+        assert.equal task.lastInvokedAt(),Date(3001)
+      "THEN it must return a task whose taskEndedAt has been changed": (err,task) ->
+        assert.equal task.taskEndedAt(),Date(4002)
+      "THEN it must return a task whose leasedTill has been changed": (err,task) ->
+        assert.equal task.leasedTill(),Date(5003)
+        
+  .addBatch 
+    "WHEN reloading the changed task the props still need to be correct": 
+      topic:  () ->
+        main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          taskContainer.getTask defaultTask2Name, @callback
+        return
+      "THEN it must not fail": (err,task) ->
+        assert.isNull err
+      "THEN it must return a task": (err,task) ->
+        assert.isNotNull task      
+      "THEN it must return a task with a valid _taskInstance": (err,task) ->
+        assert.isNotNull task._taskInstance      
+      "THEN it must return a task whose name has been changed": (err,task) ->
+        assert.equal task.name,defaultTask2Name     
+      "THEN it must return a task whose isComplete property has changed": (err,task) ->
+        assert.isTrue task.isComplete()     
+      "THEN it must return a task whose hasFailed property has changed": (err,task) ->
+        assert.isTrue task.hasFailed()     
+      "THEN it must return a task whose percentageComplete has been changed": (err,task) ->
+        assert.equal task.percentageComplete(),65
+      "THEN it must return a task whose statusText has been changed": (err,task) ->
+        assert.equal task.statusText(),"Status TEXT"
+      "THEN it must return a task whose invokeCount has been changed": (err,task) ->
+        assert.equal task.invokeCount(),2
+      "THEN it must return a task whose taskDurationInMilliseconds has been changed": (err,task) ->
+        assert.equal task.taskDurationInMilliseconds(),3291
+      "THEN it must return a task whose maxRetries has been changed": (err,task) ->
+        assert.equal task.maxRetries(),67
+      "THEN it must return a task whose delayBetweenRetriesInSeconds has been changed": (err,task) ->
+        assert.equal task.delayBetweenRetriesInSeconds(),19
+      "THEN it must return a task whose taskData has been changed": (err,task) ->
+        assert.isNotNull task.taskData()
+      "THEN it must return a task whose taskData has been changed and contains a value": (err,task) ->
+        assert.equal task.taskData().foo, "bar"
+      "THEN it must return a task whose processingData has been changed": (err,task) ->
+        assert.isNotNull task.processingData()
+      "THEN it must return a task whose processingData has been changed and contains a value": (err,task) ->
+        assert.equal task.processingData().hello, "world"
+      "THEN it must return a task whose lastInvokedAt has been changed": (err,task) ->
+        assert.equal task.lastInvokedAt(),Date(3001)
+      "THEN it must return a task whose taskEndedAt has been changed": (err,task) ->
+        assert.equal task.taskEndedAt(),Date(4002)
+      "THEN it must return a task whose leasedTill has been changed": (err,task) ->
+        assert.equal task.leasedTill(),Date(5003)
 
   .addBatch 
     "WHEN deleting an existing task (we changed the name previously)": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
-          taskContainer.deleteTask defaultTask1Name, @callback
+          taskContainer.deleteTask defaultTask2Name, @callback
         return
       "THEN it must not fail": (err,task) ->
         assert.isNull err
@@ -128,7 +233,7 @@ vows.describe("integration_task")
       "THEN it must return a task with a _taskInstance set to null": (err,task) ->
         assert.isNull task._taskInstance      
       "THEN it must return a task whose properties are still accessible": (err,task) ->
-        assert.equal task.name,defaultTask1Name     
+        assert.equal task.name,defaultTask2Name     
       # TODO: We need to make sure that the task has been removed from the mongoose array too.
   .addBatch 
     "WHEN accessing a task container after we deleted the only task and we call getTasks": 

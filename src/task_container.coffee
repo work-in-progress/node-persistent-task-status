@@ -138,9 +138,19 @@ class exports.TaskContainer
       # TODO: Optimize this code through use of utility function, no need
       # to explicitly define all this
       t._taskInstance.name = values.name if values.name?
-      t._taskInstance.isComplete = value.isComplete if values.isComplete ?
-      
-      
+      t._taskInstance.isComplete = values.isComplete if values.isComplete?      
+      t._taskInstance.percentageComplete = values.percentageComplete if values.percentageComplete?
+      t._taskInstance.statusText = values.statusText if values.statusText?
+      t._taskInstance.taskData = values.taskData if values.taskData?
+      t._taskInstance.processingData = values.processingData if values.processingData?
+      t._taskInstance.invokeCount = values.invokeCount if values.invokeCount?
+      t._taskInstance.lastInvokedAt = values.lastInvokedAt if values.lastInvokedAt?
+      t._taskInstance.taskDurationInMilliseconds = values.taskDurationInMilliseconds if values.taskDurationInMilliseconds?
+      t._taskInstance.taskEndedAt = values.taskEndedAt if values.taskEndedAt?
+      t._taskInstance.leasedTill = values.leasedTill if values.leasedTill?
+      t._taskInstance.maxRetries = values.maxRetries if values.maxRetries?
+      t._taskInstance.delayBetweenRetriesInSeconds = values.delayBetweenRetriesInSeconds if values.delayBetweenRetriesInSeconds?
+      t._taskInstance.hasFailed = values.hasFailed if values.hasFailed?
       
       @_taskContainerInstance.save (e) =>
         cb(e) if e?
