@@ -3,10 +3,6 @@
 #
 # The client is the primary, front facing mechanism. 
 # The default instance is exposed as client.
-# Required features:
-# getOrCreate a TaskContainer
-# delete a TaskContainer
-# clients can be case insensitive (should be default) - if so then the names are automatically converted
 
 _ = require 'underscore'
 constants = require './constants'
@@ -16,36 +12,40 @@ TaskContainer = require('./task_container').TaskContainer
 schema = require './schema'
 
 class exports.Client
-  caseSensitiveNames : false
   
   # Initializes a new client
-  # Takes a hash that can contain
-  # opts.connection : mongodb connection (through mongoose) or null
-  # opts.connectionUrl : url with database connection info 
-  # opts.caseSensitiveNames : true | false, optional. When set to false all names will be converted to downcase before saving / accessing
-  constructor: (opts) ->
-    opts = opts || {}
-    @caseSensitiveName = opts.caseSensitiveNames if opts.caseSensitiveNames? 
-
-
-  # Gets a task container, if it exists.
-  # Callback parameters
-  # err: Set to an Error object in case of error.
-  # tc: The TaskContainer object, or null if it does not exists 
+  # @constructor
+  constructor: () ->
+  
+  # Callback that is invoked when calling @see getTaskContainer.
+  # @typeDoc {function} GetTaskContainerCallback
+  # @param {?Error} err The error, if any.
+  # @param {?TaskContainer} taskContainer The task container object, or null if no task has been found.
+  ###
+  ###
+  # Returns a task container..
+  # @param {string} name The name of the task container. Required.
+  # @param {GetTaskContainerCallback} cb Callback that is invoked on completion.
   getTaskContainer : (name,cb) =>       
     schema.TaskContainerModel.findOne name : name,(e,doc) =>
       return cb(e) if e? 
       return cb(null,null) unless doc?
       
-      tc = new TaskContainer(doc.name)  
-      tc._init(doc)    
-      cb null,tc
+      taskContainer = new TaskContainer(doc.name)  
+      taskContainer._init(doc)    
+      cb null,taskContainer
     
-  # Gets or creates a task container.
-  # Callback parameters
-  # err: Set to an Error object in case of error.
-  # tc: TaskContainer object
-  # isNew : true if this task container has been newly created, otherwise false
+
+  # Callback that is invoked when calling @see getOrCreateTaskContainer.
+  # @typeDoc {function} GetOrCreateTaskContainerCallback
+  # @param {?Error} err The error, if any.
+  # @param {?TaskContainer} taskContainer The task container object.
+  # @param {Boolean} isNew True if this is a new task container, otherwise false.
+  ###
+  ###
+  # Returns a task container or creates a new one if it does not exist.
+  # @param {string} name The name of the task container. Required.
+  # @param {GetOrCreateTaskContainerCallback} cb Callback that is invoked on completion.
   getOrCreateTaskContainer : (name,cb) =>  
     @getTaskContainer name, (e,tc) ->
       return cb(e) if e?
@@ -56,12 +56,17 @@ class exports.Client
       tc._create  (e) ->
         return cb e if e?
         cb null,tc,true
-    
+     
+  # Callback that is invoked when calling @see deleteTaskContainer.
+  # @typeDoc {function} DeleteTaskContainerCallback
+  # @param {?Error} err The error, if any.
+  # @param {String} name The name of the deleted task container
+  ###
+  ###
   # Deletes a task container from the store. If it does not exist then
   # it is simply ignored
-  # Callback parameters:
-  # err: Set to an Error object in case of error.
-  # name: Set to the name of the task container that has been deleted.
+  # @param {string} name The name of the task container. Required.
+  # @param {DeleteTaskContainerCallback} cb Callback that is invoked on completion.
   deleteTaskContainer : (name,cb) ->
     schema.TaskContainerModel.remove name : name, (e) ->
       return cb(e) if e?

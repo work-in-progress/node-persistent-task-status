@@ -113,7 +113,7 @@ class exports.TaskContainer
   # Callback that is invoked when calling @see deleteTask.
   # @typeDoc {function} DeleteTaskCallback
   # @param {?Error} err The error, if any.
-  # @param {Task} task The task that has been deleted, for reference only. Do not invoke any methods on it, only access properties. Set to null if the task did not exist.
+  # @param {Task} task The task that has been deleted, for reference only. Do not access property getters. Set to null if the task did not exist.
   ###
   ###
   # Deletes a task.

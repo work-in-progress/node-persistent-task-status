@@ -39,7 +39,7 @@ vows.describe("integration_task_container")
       "THEN it must exist": (err,taskContainer) ->
         assert.isNotNull taskContainer      
       "THEN it must have it's  _instance assigned.": (err,taskContainer) ->
-        assert.isNotNull taskContainer._instance
+        assert.isNotNull taskContainer._instance 
   .addBatch 
     "WHEN accessing a task container after get or create": 
       topic:  () -> 
