@@ -36,23 +36,42 @@ class exports.TaskContainer
   # @param {?Task} task The task that has been created. 
   ###
   ### 
-  # Optional parameters for the @see addTask method.
-  # @typeDoc {object} AddTaskOptions
-  # No parameters as of now.
+  # Additional values for the @see addTask method.
+  # @typeDoc {object} AddTaskValues
+  # @param {bool} isComplete True if this task has been completed, otherwise false.
+  # @param {number} percentageComplete A number ranging from 0 to 100 
+  # @param {string} statusText A text. Can be null or empty. Typically a single sentence. 
+  # @param {object} taskData An object containing custom task data, or null.
+  # @param {object} processingData An object containing processing task data, or null.
+  # @param {number} invokeCount A positive integer or 0
+  # @param {date} lastInvokedAt The date this task was last invoked at or null if it has not been invoked yet.
+  # @param {date} taskEndedAt The date this task has ended or null if it has not been invoked yet.
+  # @param {number} taskDurationInMilliseconds The total processing time in milliseconds, or null
+  # @param {date} leasedTill The date until this task has been leased.
+  # @param {number} maxRetries An positive integer or 0. 3 to 10 seems like reasonable defaults.
+  # @param {number} delayBetweenRetriesInSeconds An positive integer or 0. Set this to a non zero value if you perform web requests.
+  # @param {bool} hasFailed True if this task has failed, otherwise false.
   ###
   ###
   # Add a task to a container. The new task is immediately persisted.
   # @param {string} name The name of the task. Required and must be unique within a container.
-  # @param {?AddTaskOptions|null} opts Additional options. Can be null
+  # @param {?AddTaskValues|null} opts Additional values. Can be null
   # @param {AddTaskCallback} cb Callback that is invoked on completion.
-  addTask: (name,opts,cb) ->
+  addTask: (name,values,cb) ->
+    values = {} unless values
+    
     instance =new schema.TaskModel()
+    task = new Task()
+    task._taskInstance = instance
+    task._update values
     instance.name = name
+    
     @_taskContainerInstance.tasks.push instance
     @_taskContainerInstance.save (err) =>
       return cb(err) if err?
-      t = new Task()._init(instance)
-      cb null,t
+      task.name = task._taskInstance.name
+      #t = t._init(instance) # force reload?
+      cb null,task
     
   # Callback that is invoked when calling @getNextTask.
   # @typeDoc {function} GetNextTaskCallback
