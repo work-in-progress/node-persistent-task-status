@@ -27,14 +27,6 @@ class exports.Task
     @_taskInstance = mongooseTaskInstance
     #@name = mongooseTaskInstance.name
 
-  # Initializes the task object from the mongoose model object and
-  # sets the @see _taskInstance property.
-  # @param {!TaskSchema} instance The model from mongoose. Must not be null.
-  # @return {!Task} Returns a reference to this to allow for chaining.
-  _init: (instance) -> 
-    @_taskInstance = instance
-    #@name = instance.name
-    @
 
   # Parameters for the @see _update method.
   # @typeDoc {object} _UpdateValues
