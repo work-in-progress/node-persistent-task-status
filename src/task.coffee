@@ -25,7 +25,7 @@ class exports.Task
   # @param {schema.TaskModel} mongooseTaskInstance The mongoose instance
   constructor: (mongooseTaskInstance) ->
     @_taskInstance = mongooseTaskInstance
-    @name = mongooseTaskInstance.name
+    #@name = mongooseTaskInstance.name
 
   # Initializes the task object from the mongoose model object and
   # sets the @see _taskInstance property.
@@ -33,7 +33,7 @@ class exports.Task
   # @return {!Task} Returns a reference to this to allow for chaining.
   _init: (instance) -> 
     @_taskInstance = instance
-    @name = instance.name
+    #@name = instance.name
     @
 
   # Parameters for the @see _update method.
@@ -75,6 +75,11 @@ class exports.Task
     @_taskInstance.maxRetries = values.maxRetries if values.maxRetries?
     @_taskInstance.delayBetweenRetriesInSeconds = values.delayBetweenRetriesInSeconds if values.delayBetweenRetriesInSeconds?
     @_taskInstance.hasFailed = values.hasFailed if values.hasFailed?
+
+  # The name of the task. Must be unique within the 
+  # @return {string} The name of the task. Never null.
+  name: () ->
+    @_taskInstance.name
       
   # Boolean indicating whether the task has been completed or not.
   # @return {bool} True if this task has been completed, otherwise false.

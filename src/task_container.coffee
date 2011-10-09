@@ -62,14 +62,15 @@ class exports.TaskContainer
     
     instance =new schema.TaskModel()
     task = new Task(instance)
+    values.name = name
   #  task._taskInstance = instance
     task._update values
-    instance.name = name
+    #instance.name = name
     
     @_taskContainerInstance.tasks.push instance
     @_taskContainerInstance.save (err) =>
       return cb(err) if err?
-      task.name = task._taskInstance.name
+      #task.name = task._taskInstance.name
       #t = t._init(instance) # force reload?
       cb null,task
     

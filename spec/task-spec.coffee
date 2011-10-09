@@ -16,7 +16,7 @@ vows.describe("The task").addBatch(
     "THEN it must return a task with a valid _taskInstance": (task) ->
       assert.isNotNull task._taskInstance      
     "THEN it must return a task whose name is null": (task) ->
-      assert.isNull task.name
+      assert.isNull task.name()
     "THEN it must return a task whose isComplete property is false": (task) ->
       assert.isFalse task.isComplete()     
     "THEN it must return a task whose hasFailed property is false": (task) ->
