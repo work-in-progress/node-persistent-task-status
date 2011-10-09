@@ -129,7 +129,7 @@ class exports.TaskContainer
       
       t._taskInstance.remove()
       @_taskContainerInstance.save (e) =>
-        cb(e) if e?
+        return cb(e) if e?
         t._taskInstance = null
         cb null,t
   
@@ -169,8 +169,7 @@ class exports.TaskContainer
       t._update(values)
       
       @_taskContainerInstance.save (e) =>
-        cb(e) if e?
-        t._init t._taskInstance # reload property values
+        return cb(e) if e?
         cb(null,t)
   
   _init: (instance) ->
