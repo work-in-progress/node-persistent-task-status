@@ -122,6 +122,19 @@ class exports.TaskContainer
   # Parameters for the @see updateTask method.
   # @typeDoc {object} UpdateTaskValues
   # @param {?string} name The name of the task. Ignored if null or undefined
+  # @param {bool} isComplete True if this task has been completed, otherwise false.
+  # @param {number} percentageComplete A number ranging from 0 to 100 
+  # @param {string} statusText A text. Can be null or empty. Typically a single sentence. 
+  # @param {object} taskData An object containing custom task data, or null.
+  # @param {object} processingData An object containing processing task data, or null.
+  # @param {number} invokeCount A positive integer or 0
+  # @param {date} lastInvokedAt The date this task was last invoked at or null if it has not been invoked yet.
+  # @param {date} taskEndedAt The date this task has ended or null if it has not been invoked yet.
+  # @param {number} taskDurationInMilliseconds The total processing time in milliseconds, or null
+  # @param {date} leasedTill The date until this task has been leased.
+  # @param {number} maxRetries An positive integer or 0. 3 to 10 seems like reasonable defaults.
+  # @param {number} delayBetweenRetriesInSeconds An positive integer or 0. Set this to a non zero value if you perform web requests.
+  # @param {bool} hasFailed True if this task has failed, otherwise false.
   ###
   ###
   # Updates a task.
@@ -133,24 +146,7 @@ class exports.TaskContainer
       return cb(err) if err?
       return cb(new Error("Task '#{name}' not found")) unless t
 
-      # add the code here that extracts the properties and assigns them to
-      # _instanceTask
-      # TODO: Optimize this code through use of utility function, no need
-      # to explicitly define all this
-      t._taskInstance.name = values.name if values.name?
-      t._taskInstance.isComplete = values.isComplete if values.isComplete?      
-      t._taskInstance.percentageComplete = values.percentageComplete if values.percentageComplete?
-      t._taskInstance.statusText = values.statusText if values.statusText?
-      t._taskInstance.taskData = values.taskData if values.taskData?
-      t._taskInstance.processingData = values.processingData if values.processingData?
-      t._taskInstance.invokeCount = values.invokeCount if values.invokeCount?
-      t._taskInstance.lastInvokedAt = values.lastInvokedAt if values.lastInvokedAt?
-      t._taskInstance.taskDurationInMilliseconds = values.taskDurationInMilliseconds if values.taskDurationInMilliseconds?
-      t._taskInstance.taskEndedAt = values.taskEndedAt if values.taskEndedAt?
-      t._taskInstance.leasedTill = values.leasedTill if values.leasedTill?
-      t._taskInstance.maxRetries = values.maxRetries if values.maxRetries?
-      t._taskInstance.delayBetweenRetriesInSeconds = values.delayBetweenRetriesInSeconds if values.delayBetweenRetriesInSeconds?
-      t._taskInstance.hasFailed = values.hasFailed if values.hasFailed?
+      t._update(values)
       
       @_taskContainerInstance.save (e) =>
         cb(e) if e?
