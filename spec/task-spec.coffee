@@ -2,13 +2,15 @@ vows = require 'vows'
 assert = require 'assert'
 
 Task = require('../lib/task').Task
+mongoose = require 'mongoose'
+schema = require '../lib/schema'
 
-# Please note that the specs here are mimicing a real use case,
-# hence the namespacing with : and stuff.
 
 vows.describe("The task").addBatch( 
   "WHEN creating a task": 
-    topic: new(Task)
+    topic: () ->
+      taskModel = new schema.TaskModel
+      new Task(taskModel)
     "THEN it must exist": (task) ->
       assert.isNotNull task      
 ).export module

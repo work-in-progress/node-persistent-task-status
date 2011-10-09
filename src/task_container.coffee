@@ -61,8 +61,8 @@ class exports.TaskContainer
     values = {} unless values
     
     instance =new schema.TaskModel()
-    task = new Task()
-    task._taskInstance = instance
+    task = new Task(instance)
+  #  task._taskInstance = instance
     task._update values
     instance.name = name
     
@@ -96,7 +96,7 @@ class exports.TaskContainer
   # @param {GetTaskCallback} cb Callback that is invoked on completion.
   getTask: (name,cb) =>
     found = _.select(@_taskContainerInstance.tasks, (t) -> t.name == name)
-    return cb(null,new Task()._init(_.first(found))) if found? && found.length > 0  
+    return cb(null,new Task(_.first(found))) if found? && found.length > 0  
     cb null,null
 
   # Callback that is invoked when calling @see getTasks.
@@ -108,7 +108,7 @@ class exports.TaskContainer
   # Retrieves all tasks belonging to this task container
   # @param {GetTasksCallback} cb Callback that is invoked on completion.
   getTasks: (cb) =>
-    tasks = ( new Task()._init(instance) for instance in @_taskContainerInstance.tasks)
+    tasks = ( new Task(instance) for instance in @_taskContainerInstance.tasks)
     cb null,tasks
     
     
