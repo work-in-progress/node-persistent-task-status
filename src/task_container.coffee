@@ -19,7 +19,7 @@ schema = require './schema'
 # A task container that groups individual tasks together.
 class exports.TaskContainer
 
-  # The cached instance
+  # The cached instance (from mongoose)
   # @type {TaskContainerSchema}
   # @private
   _taskContainerInstance : null
@@ -138,7 +138,10 @@ class exports.TaskContainer
       # TODO: Optimize this code through use of utility function, no need
       # to explicitly define all this
       t._taskInstance.name = values.name if values.name?
-
+      t._taskInstance.isComplete = value.isComplete if values.isComplete ?
+      
+      
+      
       @_taskContainerInstance.save (e) =>
         cb(e) if e?
         t._init t._taskInstance # reload property values

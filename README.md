@@ -27,12 +27,12 @@ Basic Setup
 	mongoose.connect 'mongodb://localhost/pts_test'
 
 Retrieving a task container. A task container encapsulates the persistent
-state for individual tasks
+state for individual tasks.
 
 	client.getOrCreateTaskContainer 'the unique name here', (e,taskContainer) ->
 		taskContainer...
 
-We can use the task container to add tasks. They will be immediately persisted
+We can use the task container to add tasks. They will be immediately persisted.
 
 	... taskContainer.addTask "my unique name within container", null, (e,task) ->
 				task...
