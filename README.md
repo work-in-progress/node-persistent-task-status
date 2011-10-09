@@ -4,19 +4,38 @@ A node.js module, utilizing mongoose, that allows you to persist sequential task
 
 Ok, now that we have that one liner out of the way let me explain the ratio behind this: We have some background processes that must be run in certain intervals in a certain fashion. One of those processes checks the iTunes EPF server hourly to find out if new files have been posted. If so, it needs to perform a couple steps, some in sequential order, some in parallel. The tasks are very heavy, involving gigabytes of data being shuffled around, and there is always something failing. So for this to work we need some persistent store that lets us keep track of what is going on with the tasks, and also get an insight into the current state (percentage complete). This is somewhat different from your typical message queue, which is why I created this module.
 
-The module uses mongodb because that is our primary database. Also there are two DaaS (Database as as Service) providers in the wild that offer a free plan: http://mongohq.com and http://mongolab.com.
+The module uses mongodb because that is our primary database. Also there are two DaaS (Database as as Service) providers in the wild that offer a free plan: http://mongohq.com and http://mongolab.com that you can use. We use the former one, but both are fine.
 
+One more thing:
 This module was written in Coffeescript, not because we don't understand Javascript but because we are significantly more productive in Coffeescript. Haters gonna hate :)
 
 [![Build Status](https://secure.travis-ci.org/freshfugu/persistent-task-status.png])](http://travis-ci.org/freshfugu/persistent-task-status)
 
-Please note that travis, at this point in time, does not test this correctly due to lack of mongodb. Working on that.
+Please note that travis, at this point in time, does not test this correctly due to lack of a running mongodb instance. Working on that.
 
 ## Usage
 
+The Coffeescript code is documented using jsdoc compatible markup language, blended with some Google stuff. One day we might actually be able to create
+a real API doc out of it :)
 
 ### Coffeescript
 
+Basic Setup
+
+	client = require('persistent-task-status').client
+	mongoose = require('mongoose');
+	mongoose.connect 'mongodb://localhost/pts_test'
+
+Retrieving a task container. A task container encapsulates the persistent
+state for individual tasks
+
+	client.getOrCreateTaskContainer 'the unique name here', (e,taskContainer) ->
+		taskContainer...
+
+We can use the task container to add tasks. They will be immediately persisted
+
+	... taskContainer.addTask "my unique name within container", null, (e,task) ->
+				task...
     
 ### Javascript
 
@@ -24,6 +43,7 @@ Please note that travis, at this point in time, does not test this correctly due
 ## Advertising :)
 
 Check out http://freshfugu.com and http://scottyapp.com
+Follow us on Twitter at @getscottyapp and @freshfugu and like us on Facebook please. Every mention is welcome and we follow back.
 
 ## Trivia
 
