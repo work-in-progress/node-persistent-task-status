@@ -29,6 +29,15 @@ class exports.TaskContainer
   # @param {?string} name The unique name of this task container
   constructor: (@name) ->
   
+  # The name of the task. Must be unique within the 
+  # @return {string} The name of the task. Never null.
+  #name: () ->
+  #  @_taskContainerInstance.name
+  
+  # Boolean indicating whether the task container has been completed or not.
+  # @return {bool} True if this task container has been completed, otherwise false.
+  isComplete: () ->
+    @_taskContainerInstance.isComplete
   
   # Callback that is invoked when calling @see addTask.
   # @typeDoc {function} AddTaskCallback
@@ -67,6 +76,8 @@ class exports.TaskContainer
     task._update values
     
     @_taskContainerInstance.tasks.push instance
+    @_updateTaskContainerIsComplete()
+    
     @_taskContainerInstance.save (err) =>
       return cb(err) if err?
       cb null,task
@@ -125,6 +136,8 @@ class exports.TaskContainer
       return cb(null,null) unless t
       
       t._taskInstance.remove()
+      @_updateTaskContainerIsComplete()
+      
       @_taskContainerInstance.save (e) =>
         return cb(e) if e?
         t._taskInstance = null
@@ -164,6 +177,8 @@ class exports.TaskContainer
       return cb(new Error("Task '#{name}' not found")) unless t
 
       t._update(values)
+
+      @_updateTaskContainerIsComplete()
       
       @_taskContainerInstance.save (e) =>
         return cb(e) if e?
@@ -181,3 +196,18 @@ class exports.TaskContainer
       @_taskContainerInstance = instance
       return cb(e) if e?
       cb null
+  
+  # helper that goes through all tasks and returns true if all 
+  # satisfy isComplete == true
+  _areTasksCompleted: () ->
+    _.all @_taskContainerInstance.tasks, (taskModel) -> taskModel.isComplete
+    
+  # Invoked after we update a task or add a new one.
+  # The purpose here is to set isComplete in the task container to true or false
+  # if there is a change because of it's tasks values. Would have been done differently
+  # in sql. 
+  # This method does not save itself.
+  _updateTaskContainerIsComplete: () ->
+    @_taskContainerInstance.isComplete = @_areTasksCompleted()
+    
+    

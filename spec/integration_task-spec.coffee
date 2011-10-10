@@ -48,6 +48,9 @@ vows.describe("integration_task")
         assert.isNotNull task      
       "THEN it must have the correct name": (err,task) ->
         assert.equal task.name(), defaultTask2Name
+      "THEN it's task container must not be completed": (err,taskContainer) ->
+        assert.isFalse taskContainer.isComplete()
+        
   .addBatch 
     "WHEN retrieving an existing task": 
       topic:  () ->
@@ -117,6 +120,7 @@ vows.describe("integration_task")
     "WHEN changing the name back and update the other props of an existing task": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          @taskContainer = taskContainer
           taskContainer.updateTask alternateTaskName, 
               name : defaultTask2Name
               isComplete : true
@@ -174,11 +178,14 @@ vows.describe("integration_task")
         assert.equal task.taskEndedAt(),Date(4002)
       "THEN it must return a task whose leasedTill has been changed": (err,task) ->
         assert.equal task.leasedTill(),Date(5003)
+      "THEN it's task container must not be completed": (err,task) ->
+        assert.isTrue @taskContainer.isComplete()
         
   .addBatch 
     "WHEN reloading the changed task the props still need to be correct": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          @taskContainer = taskContainer
           taskContainer.getTask defaultTask2Name, @callback
         return
       "THEN it must not fail": (err,task) ->
@@ -219,11 +226,14 @@ vows.describe("integration_task")
         assert.equal task.taskEndedAt(),Date(4002)
       "THEN it must return a task whose leasedTill has been changed": (err,task) ->
         assert.equal task.leasedTill(),Date(5003)
+      "THEN it's task container must not be completed": (err,task) ->
+        assert.isTrue @taskContainer.isComplete()
 
   .addBatch 
     "WHEN deleting an existing task (we changed the name previously)": 
       topic:  () ->
         main.client.getOrCreateTaskContainer defaultContainerName, (err,taskContainer) =>
+          @taskContainer = taskContainer
           taskContainer.deleteTask defaultTask2Name, @callback
         return
       "THEN it must not fail": (err,task) ->
@@ -231,10 +241,9 @@ vows.describe("integration_task")
       "THEN it must return a task": (err,task) ->
         assert.isNotNull task      
       "THEN it must return a task with a _taskInstance set to null": (err,task) ->
-        assert.isNull task._taskInstance      
-      #"THEN it must return a task whose properties are still accessible": (err,task) ->
-      #  assert.equal task.name(),defaultTask2Name     
-      # TODO: We need to make sure that the task has been removed from the mongoose array too.
+        assert.isNull task._taskInstance
+      "THEN it's task container must not be completed": (err,task) ->
+        assert.isTrue @taskContainer.isComplete()
   .addBatch 
     "WHEN accessing a task container after we deleted the only task and we call getTasks": 
       topic:  () ->

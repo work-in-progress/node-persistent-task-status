@@ -107,7 +107,7 @@ taskContainerSchema = new Schema
   isComplete : 
     type: Boolean
     required: true
-    default : false
+    default : true # IMPORTANT
   tasks : [taskSchema]
 
 class SchemaAndModels
