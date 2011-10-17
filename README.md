@@ -11,7 +11,7 @@ The module uses mongodb because that is our primary database. Also there are two
 One more thing:
 This module was written in Coffeescript, not because we don't understand Javascript but because we are significantly more productive in Coffeescript. Haters gonna hate :)
 
-[![Build Status](https://secure.travis-ci.org/freshfugu/persistent-task-status.png])](http://travis-ci.org/freshfugu/persistent-task-status)
+[![Build Status](https://secure.travis-ci.org/freshfugu/node-persistent-task-status.png])](http://travis-ci.org/freshfugu/node-persistent-task-status)
 
 Please note that travis, at this point in time, does not test this correctly due to lack of a running mongodb instance. Working on that.
 
